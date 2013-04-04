@@ -18,7 +18,10 @@ Or install it yourself as:
 
 ## Usage
 
+
 ``` ruby
+  #For content lists:
+  
   response = Hyperfeed::Client.at("http://contigo.abril.com.br/noticias.rss").get
   puts response.hyperfeed.inspect
   
@@ -35,6 +38,21 @@ Or install it yourself as:
                 :rel=>"feed", 
                 :type=>"application/json"}}, 
                 {:id=>"http://contigo.abril.com.br/noticias.rss?resource...
+
+
+  #For a content
+
+  response = Hyperfeed::Client.at("http://contigo.abril.com.br/noticias.rss?resource_id=7").get
+  puts response.hyperfeed.inspect
+
+  {:id=>"http://contigo.abril.com.br/noticias.rss?resource_id=7&resource_id=7", 
+   :title=>"Ticiane Pinheiro vira boneca e mostra foto no Twitter", 
+    :midia=>{:url=>"http://contigo.abril.com.br/resources/files/image/2013/4/132091110-ticiane-pinheiro-m.jpg?1365085327", 
+             :type=>"image/jpeg"}, 
+    :data=>"2013-04-04 11:20:00 -0300", 
+    :descricao=>"<p>\n\t<a href=\"/famosos/ticiane-pinheiro/apresentadora/\">Ticiane Pinheiro</a> ganhou um presente na man...", 
+    :rel=>"materia", 
+    :type=>"text/html"}}
 ```
 
 ## Contributing
