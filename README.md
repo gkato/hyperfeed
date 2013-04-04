@@ -1,6 +1,6 @@
 # Hyperfeed
 
-TODO: Write a gem description
+An adapter to plug feeds content on  hypermedia engines
 
 ## Installation
 
