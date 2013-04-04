@@ -36,8 +36,8 @@ Or install it yourself as:
                 :descricao=>"<p>\n\tUm time de estrelas se reuniu na ma...", 
                 :tipo_recurso=>"feed", :link=>{:href=>"http://contigo.abril.com.br/noticias.rss?resource_id=0", 
                 :rel=>"feed", 
-                :type=>"application/json"}}, 
-                {:id=>"http://contigo.abril.com.br/noticias.rss?resource...
+                :type=>"application/json"}}]}
+                
 
 
   #For a content
