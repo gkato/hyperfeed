@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["guilherme.kato@abril.com.br"]
   gem.description   = %q{An adapter to plug feeds content on hypermedia engines}
   gem.summary       = %q{An adapter to plug feeds content on hypermedia engines}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/gkato/hyperfeed"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
