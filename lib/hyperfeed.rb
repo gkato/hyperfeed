@@ -3,7 +3,7 @@ require "http_monkey"
 require "nokogiri"
 require "json"
 
-require "ruby-debug"
+require "ruby-debug" if $DEBUG
 
 require "hyperfeed/resource_builder"
 require "hyperfeed/discover"
