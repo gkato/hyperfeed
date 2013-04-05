@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Hyperfeed::VERSION
   gem.authors       = ["Guilherme Kato"]
   gem.email         = ["guilherme.kato@abril.com.br"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{An adapter to plug feeds content on hypermedia engines}
+  gem.summary       = %q{An adapter to plug feeds content on hypermedia engines}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
