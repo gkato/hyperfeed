@@ -1,3 +1,5 @@
+require "hyperfeed/feed"
+
 module Hyperfeed
   class AdapterMiddleware
 
@@ -7,11 +9,12 @@ module Hyperfeed
 
     def call(env)
       code, headers, body = @app.call(env)
-
       url = env.uri.to_s
-      rss = Nokogiri::XML(body)
+      content = Nokogiri::XML(body)
 
-      discover = Hyperfeed::Discover.new(url, rss)
+      feed = Hyperfeed::Feed.new(url, content)
+
+      discover = Hyperfeed::Discover.new(feed)
       HttpMonkey::Client::Response.inject_with(:hyperfeed, discover.hyperfeed)
 
       [code, headers, body]

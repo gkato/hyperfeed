@@ -1,14 +1,14 @@
 module Hyperfeed
   module ResourceBuilder
 
-    def get_resource(rss, url, index)
-      item = rss.xpath("//item")[index]
+    def get_resource(feed, index)
+      item = feed.content.xpath("//item")[index]
       {
-        :id => generate_id(url, index),
+        :id => generate_id(feed.url, index),
         :title =>  item.xpath("title").inner_text.strip,
-        :midias => get_media(item),
         :data => item.xpath("pubDate").inner_text,
         :descricao => item.xpath("description").inner_text.strip,
+        :midias => get_media(item),
         :link => {
           :href => item.xpath("link").inner_text,
           :rel => "materia",
@@ -27,17 +27,17 @@ module Hyperfeed
       end
     end
 
-    def retrieve_resources_list(rss, url, options={})
-      total = rss.xpath("//item").size
+    def retrieve_resources_list(feed, options={})
+      total = feed.content.xpath("//item").size
       per_page = options[:per_page] || 10
       page =  options[:page] || 1
-      results = build_results(rss, url)
+      results = build_results(feed)
 
-      resource = {:itens_por_pagina => per_page,
-                  :pagina_atual => page,
-                  :paginas_totais => total/per_page,
-                  :total_resultado => total,
-                  :resultado => results
+      resource = {:per_page => per_page,
+                  :current_page => page,
+                  :total_pages => total/per_page,
+                  :total_results => total,
+                  :result => results
       }
     end
 
@@ -46,17 +46,16 @@ module Hyperfeed
       "#{url}#{char}resource_id=#{index}"
     end
 
-    def build_results(rss, url)
+    def build_results(feed)
       results = []
-      rss.xpath("//item").each_with_index do |item, index|
-        id = generate_id(url, index)
+      feed.content.xpath("//item").each_with_index do |item, index|
+        id = generate_id(feed.url, index)
         results << {
           :id => id,
-          :data => item.xpath("pubDate").inner_text,
-          :titulo => item.xpath("title").inner_text.strip,
-          :marca => item.xpath("source").inner_text,
-          :descricao => item.xpath("description").inner_text.strip,
-          :tipo_recurso => "feed",
+          :date => item.xpath("pubDate").inner_text,
+          :title => item.xpath("title").inner_text.strip,
+          :source => item.xpath("source").inner_text,
+          :resource_type => "feed",
           :link => {
             :href => id,
             :rel => "feed",

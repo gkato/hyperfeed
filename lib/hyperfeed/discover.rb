@@ -1,19 +1,21 @@
+require"hyperfeed/resource"
+
 module Hyperfeed
   class Discover
 
     include Hyperfeed::ResourceBuilder
 
-    def initialize(url, rss)
-      @url = url
-      @rss = rss
+    def initialize(feed)
+      @feed = feed
     end
 
     def hyperfeed
-      if @url =~ /resource_id=([0-9]+)/
-        hyperfeed = get_resource(@rss, @url, $1.to_i)
+      if @feed.url =~ /resource_id=([0-9]+)/
+        resource = get_resource(@feed, $1.to_i)
       else
-        hyperfeed = retrieve_resources_list(@rss, @url, {})
+        resource = retrieve_resources_list(@feed, {})
       end
+      Hyperfeed::Resource.new(resource)
     end
 
   end
