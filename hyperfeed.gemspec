@@ -19,7 +19,8 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "http_monkey", "~> 0.0"
   gem.add_dependency "nokogiri", "~> 1.5"
-  gem.add_development_dependency 'ruby-debug19'
+  gem.add_dependency 'methodize'
 
+  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'fakeweb'
 end
-

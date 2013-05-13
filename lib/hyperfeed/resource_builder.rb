@@ -1,66 +1,68 @@
+require 'digest/md5'
+
 module Hyperfeed
   module ResourceBuilder
 
-    def get_resource(feed, index)
-      item = feed.content.xpath("//item")[index]
-      {
-        :id => generate_id(feed.url, index),
-        :title =>  item.xpath("title").inner_text.strip,
-        :data => item.xpath("pubDate").inner_text,
-        :descricao => item.xpath("description").inner_text.strip,
-        :midias => get_media(item),
-        :link => {
-          :href => item.xpath("link").inner_text,
-          :rel => "materia",
-          :type => "text/html"
-        }
-      }
+    def get_resource(feed, id)
+      item = feed.content.xpath("//item").find { |i| generate_id(i) == id }
+
+      resource = {:id => id}
+      item.children.reject{ |x| x.name == "text" }.each do |node|
+        if node.name == "enclosure"
+          resource[:enclosure] ||= []
+          resource[:enclosure] << get_media(node)
+        else
+          resource[node.name.downcase.to_sym] = node.inner_text.strip
+        end
+      end
+
+      resource.extend(Methodize)
     end
 
     def get_media(item)
-      media = ""
-      unless item.xpath("enclosure").nil?
-        media = {
-          :url => item.xpath("enclosure").attr("url").inner_text,
-          :type => item.xpath("enclosure").attr("type").inner_text
-        }
+      media = {
+        :url => item.attr("url").strip,
+        :type => item.attr("type").strip,
+      }
+      item.children.reject{ |x| x.name == "text" }.each do |node|
+        media[node.name.to_sym] = node.inner_text.strip
       end
+      media
     end
 
     def retrieve_resources_list(feed, options={})
       total = feed.content.xpath("//item").size
-      per_page = options[:per_page] || 10
-      page =  options[:page] || 1
-      results = build_results(feed)
+
+      per_page = (options[:per_page] || 10).to_i
+      page =  (options[:page] || 1).to_i
+
+      results = build_results(feed).each_slice(per_page).to_a
+
+      total_pages = results.size
+      results = results[page-1]
 
       resource = {:per_page => per_page,
                   :current_page => page,
-                  :total_pages => total/per_page,
+                  :total_pages => total_pages,
                   :total_results => total,
                   :result => results
-      }
+      }.extend(Methodize)
     end
 
-    def generate_id(url, index)
-      char = url.include?("?") ? "&" : "?"
-      "#{url}#{char}resource_id=#{index}"
+    def generate_id(item)
+      link = (item.xpath("link") || item.xpath("guid")).inner_text
+      Digest::MD5.hexdigest(link)
     end
 
     def build_results(feed)
       results = []
-      feed.content.xpath("//item").each_with_index do |item, index|
-        id = generate_id(feed.url, index)
+      feed.content.xpath("//item").each do |item|
+        id = generate_id(item)
         results << {
           :id => id,
-          :date => item.xpath("pubDate").inner_text,
-          :title => item.xpath("title").inner_text.strip,
-          :source => item.xpath("source").inner_text,
-          :resource_type => "feed",
-          :link => {
-            :href => id,
-            :rel => "feed",
-            :type => "application/json"
-          }
+          :pubdate => (item.xpath("pubDate").inner_text rescue ""),
+          :title => (item.xpath("title").inner_text.strip rescue ""),
+          :source => (item.xpath("source").inner_text rescue "")
         }
       end
       results

@@ -1,36 +1,30 @@
 require "hyperfeed/version"
 require "http_monkey"
 require "nokogiri"
-require "json"
 
 require "hyperfeed/resource_builder"
-require "hyperfeed/discover"
-require "hyperfeed/middleware/adapter_middleware"
+require "ostruct"
+require 'methodize'
 
-class HttpMonkey::Client::Response
-  attr_accessor :hyperfeed
+class Hyperfeed::Client
+  include Hyperfeed::ResourceBuilder
 
-  @@injections = {}
-  def self.inject_with(attribute, value)
-    @@injections[attribute] = value
+  def initialize(url, options)
+    @options = options
+
+    response = HttpMonkey.at(url).get
+    raise "Error: #{response.code} - #{response.body}" unless response.code == 200
+
+    content = Nokogiri::XML(response.body)
+    @feed = OpenStruct.new(:url => url, :content => content)
   end
 
-  def initialize(code, headers, body)
-    super
-    self.headers = HttpObjects::HeadersHash.new(headers)
-    after_initialize
+  def self.at(url, options = {})
+    new(url, options)
   end
 
-  protected
-
-  def after_initialize
-    @@injections.each do |attribute, value|
-      send("#{attribute}=", value)
-    end
+  def get(id = nil)
+    return retrieve_resources_list(@feed, @options) unless id
+    get_resource(@feed, id)
   end
-
-end
-
-Hyperfeed::Client = HttpMonkey.build do
-  middlewares.use Hyperfeed::AdapterMiddleware
 end
