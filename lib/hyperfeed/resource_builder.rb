@@ -6,17 +6,7 @@ module Hyperfeed
     def get_resource(feed, id)
       item = feed.content.xpath("//item").find { |i| generate_id(i) == id }
 
-      resource = {:id => id}
-      item.children.reject{ |x| x.name == "text" }.each do |node|
-        if node.name == "enclosure"
-          resource[:enclosure] ||= []
-          resource[:enclosure] << get_media(node)
-        else
-          resource[node.name.downcase.to_sym] = node.inner_text.strip
-        end
-      end
-
-      resource.extend(Methodize)
+      collect_fields(item).extend(Methodize)
     end
 
     def get_media(item)
@@ -54,16 +44,24 @@ module Hyperfeed
       Digest::MD5.hexdigest(link)
     end
 
+    def collect_fields(item)
+      resource = {:id => generate_id(item)}
+      item.children.reject{ |x| x.name == "text" }.each do |node|
+        if node.name == "enclosure"
+          resource[:enclosure] ||= []
+          resource[:enclosure] << get_media(node)
+        else
+          resource[node.name.downcase.to_sym] = node.inner_text.strip
+        end
+      end
+      resource
+    end
+
     def build_results(feed)
       results = []
       feed.content.xpath("//item").each do |item|
         id = generate_id(item)
-        results << {
-          :id => id,
-          :pubdate => (item.xpath("pubDate").inner_text rescue ""),
-          :title => (item.xpath("title").inner_text.strip rescue ""),
-          :source => (item.xpath("source").inner_text rescue "")
-        }
+        results << collect_fields(item)
       end
       results
     end
