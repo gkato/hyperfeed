@@ -32,9 +32,6 @@ Or install it yourself as:
   puts response.inspect
   => {:per_page=>10, :current_page=>1, :total_pages=>1, :total_results=>5, :result=>[ ]...
   
-  puts response.code
-  => 200
-  
   ##############
   # Reading items:
   
