@@ -12,22 +12,30 @@ describe Hyperfeed do
       register_uri(:get, url, :body => fixture("lst_mob.xml"))
     end
 
-    subject { Hyperfeed::Client.at(url).get }
-    its(:per_page)      { should == 10 }
-    its(:current_page)  { should == 1 }
-    its(:total_pages)   { should == 35 }
-    its(:total_results) { should == 350 }
+    subject { Hyperfeed::Client.at(url) }
+    its(:code) { should == 200}
 
-    context "#result" do
+    context "get" do
       def subject
-        super.result.first
+        super.get
       end
+      its(:per_page)      { should == 10 }
+      its(:current_page)  { should == 1 }
+      its(:total_pages)   { should == 35 }
+      its(:total_results) { should == 350 }
 
-      its(:id)      { should == "f91f93b7061233a9c13c20376c450012" }
-      its(:pubdate) { should == "10/05/2013" }
-      its(:title)   { should == "BMW e maior marca do mundo, diz Forbes" }
-      its(:source)  { should == "QUATRO RODAS" }
+      context "#result" do
+        def subject
+          super.result.first
+        end
+
+        its(:id)      { should == "f91f93b7061233a9c13c20376c450012" }
+        its(:pubdate) { should == "10/05/2013" }
+        its(:title)   { should == "BMW e maior marca do mundo, diz Forbes" }
+        its(:source)  { should == "QUATRO RODAS" }
+      end
     end
+
   end
 
   context "with per_page param" do
@@ -78,5 +86,15 @@ describe Hyperfeed do
       it { subject.first.type.should == "image/jpeg" }
       it { subject.first.title.should == "BMW e maior marca do mundo, diz Forbes" }
     end
+  end
+
+  context "with non valid id" do
+    before do
+      register_uri(:get, url, :body => fixture("lst_mob.xml"))
+    end
+
+    subject { Hyperfeed::Client.at(url).get("nonVALIDid") }
+
+    it { should == nil }
   end
 end

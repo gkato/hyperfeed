@@ -6,6 +6,8 @@ module Hyperfeed
     def get_resource(feed, id)
       item = feed.content.xpath("//item").find { |i| generate_id(i) == id }
 
+      return nil unless item
+
       collect_fields(item).extend(Methodize)
     end
 

@@ -9,10 +9,14 @@ require 'methodize'
 class Hyperfeed::Client
   include Hyperfeed::ResourceBuilder
 
+  attr_accessor :code, :body
+
   def initialize(url, options)
     @options = options
 
     response = HttpMonkey.at(url).get
+    self.code = response.code
+    self.body = response.body
     raise "Error: #{response.code} - #{response.body}" unless response.code == 200
 
     content = Nokogiri::XML(response.body)
