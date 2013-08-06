@@ -4,7 +4,7 @@ This gem turns RSS Feeds into ruby objects. It is a [HttpMonkey](https://github.
 
 As a gift for you this hash is [Methodized](https://github.com/lfcipriani/methodize), in other words, you can read the hash attributes as object methods.
 
-*Note: currently supports only RSS feeds type (someone wants to code a Atom support???) and we let you to use feeds thats has more than W3C attributes on the content.
+*Note: currently supports only RSS feeds type (someone wants to code an Atom support???) and we let you to use feeds thats has more than W3C attributes on the content.
 
 ## Installation
 
